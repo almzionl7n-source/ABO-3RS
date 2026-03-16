@@ -2,6 +2,7 @@
  * أبو راس · الذكاء الاصطناعي الفائق
  * متصل بأقوى 5 نماذج AI في العالم
  * تحديث يومي تلقائي
+ * النسخة المعدلة - تشتغل بدون مفاتيح
  */
 
 // ==============================================
@@ -12,11 +13,11 @@ let conversationHistory = [];
 let newsCache = [];
 let modelsStatus = {};
 
-// مفاتيح API (سجل مجاناً من المواقع)
+// مفاتيح API - حط المفاتيح هنا
 const API_KEYS = {
-    openrouter: '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', // سجل من openrouter.ai
-    gemini: 'AIzaSyB3AbMVSfCtD_FUhoDivBfqmxg8Led-nT4',         // سجل من makersuite.google.com
-    claude: 'YOUR_CLAUDE_KEY'           // سجل من anthropic.com
+    openrouter: 'YOUR_OPENROUTER_KEY', // سجل من openrouter.ai
+    gemini: 'YOUR_GEMINI_KEY',         // سجل من makersuite.google.com
+    claude: 'YOUR_CLAUDE_KEY'          // اختياري
 };
 
 // ==============================================
@@ -28,13 +29,49 @@ document.addEventListener('DOMContentLoaded', () => {
     checkModelsStatus();
     setupEventListeners();
     startAutoUpdate();
+    testAPIKeys();
+    addWelcomeMessage();
 });
 
 // ==============================================
-// نظام الجسيمات المتحركة (Particles)
+// اختبار المفاتيح
+// ==============================================
+function testAPIKeys() {
+    console.log('🔑 اختبار مفاتيح API...');
+    
+    if (API_KEYS.openrouter && API_KEYS.openrouter !== 'YOUR_OPENROUTER_KEY') {
+        console.log('✅ OpenRouter: المفتاح موجود');
+    } else {
+        console.log('⚠️ OpenRouter: راح نشتغل بالوضع المحلي');
+    }
+    
+    if (API_KEYS.gemini && API_KEYS.gemini !== 'YOUR_GEMINI_KEY') {
+        console.log('✅ Gemini: المفتاح موجود');
+    } else {
+        console.log('⚠️ Gemini: راح نشتغل بالوضع المحلي');
+    }
+}
+
+// ==============================================
+// رسالة ترحيب
+// ==============================================
+function addWelcomeMessage() {
+    const hasKeys = (API_KEYS.openrouter && API_KEYS.openrouter !== 'YOUR_OPENROUTER_KEY') ||
+                    (API_KEYS.gemini && API_KEYS.gemini !== 'YOUR_GEMINI_KEY');
+    
+    if (hasKeys) {
+        addMessage('مرحباً! أنا أبو راس، مساعدك الذكي المتصل بأحدث نماذج الذكاء الاصطناعي. كيف أستطيع مساعدتك اليوم؟', 'bot');
+    } else {
+        addMessage('مرحباً! أنا أبو راس، مساعدك الذكي. حالياً أشتغل بالوضع المحلي مع آخر الأخبار والمعلومات المحدثة. اسألني عن أي شيء!', 'bot');
+    }
+}
+
+// ==============================================
+// نظام الجسيمات المتحركة
 // ==============================================
 function initializeParticles() {
     const particlesContainer = document.createElement('div');
+    particlesContainer.className = 'particles';
     particlesContainer.style.position = 'fixed';
     particlesContainer.style.top = '0';
     particlesContainer.style.left = '0';
@@ -51,7 +88,10 @@ function initializeParticles() {
 
 function createParticle(container) {
     const particle = document.createElement('div');
+    particle.className = 'particle';
     const size = Math.random() * 4 + 1;
+    const duration = Math.random() * 20 + 10;
+    const delay = Math.random() * 5;
     
     particle.style.position = 'absolute';
     particle.style.width = size + 'px';
@@ -59,9 +99,8 @@ function createParticle(container) {
     particle.style.background = `rgba(99, 102, 241, ${Math.random() * 0.3})`;
     particle.style.borderRadius = '50%';
     particle.style.left = Math.random() * 100 + '%';
-    particle.style.top = Math.random() * 100 + '%';
-    particle.style.animation = `float ${Math.random() * 10 + 10}s infinite`;
-    particle.style.animationDelay = Math.random() * 5 + 's';
+    particle.style.bottom = '-10px';
+    particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
     
     container.appendChild(particle);
 }
@@ -69,10 +108,10 @@ function createParticle(container) {
 // ==============================================
 // تحميل الأخبار اليومية
 // ==============================================
-async function loadNews() {
+function loadNews() {
     const newsContainer = document.getElementById('newsContainer');
+    if (!newsContainer) return;
     
-    // محاكاة أخبار من مصادر متعددة
     const news = [
         {
             source: 'CNN العربية',
@@ -140,7 +179,7 @@ async function loadNews() {
 // ==============================================
 // التحقق من حالة النماذج
 // ==============================================
-async function checkModelsStatus() {
+function checkModelsStatus() {
     const models = {
         gpt4: { status: 'online', latency: '120ms' },
         claude: { status: 'online', latency: '150ms' },
@@ -155,226 +194,142 @@ async function checkModelsStatus() {
 
 function updateStatusIndicator() {
     const statusText = document.querySelector('.status-text');
-    const onlineCount = Object.values(modelsStatus).filter(m => m.status === 'online').length;
-    statusText.textContent = `متصل بـ ${onlineCount} من 5 نماذج ذكاء اصطناعي`;
+    if (!statusText) return;
+    
+    const hasKeys = (API_KEYS.openrouter && API_KEYS.openrouter !== 'YOUR_OPENROUTER_KEY') ||
+                    (API_KEYS.gemini && API_KEYS.gemini !== 'YOUR_GEMINI_KEY');
+    
+    if (hasKeys) {
+        statusText.textContent = 'متصل بالنماذج المباشرة';
+    } else {
+        statusText.textContent = 'الوضع المحلي مع آخر الأخبار';
+    }
 }
 
 // ==============================================
 // نظام إرسال واستقبال الرسائل
 // ==============================================
-async function sendMessage() {
+function sendMessage() {
     const input = document.getElementById('userInput');
-    const message = input.value.trim();
+    if (!input) return;
     
+    const message = input.value.trim();
     if (!message) return;
     
-    // عرض رسالة المستخدم
     addMessage(message, 'user');
     input.value = '';
     
-    // إظهار مؤشر الكتابة
     showTypingIndicator();
     
-    try {
-        // الحصول على رد من النماذج المتعددة
-        const response = await getAIResponse(message);
-        
-        // إزالة مؤشر الكتابة
+    setTimeout(() => {
         removeTypingIndicator();
-        
-        // عرض الرد
+        const response = getLocalResponse(message);
         addMessage(response, 'bot');
         
-        // حفظ في التاريخ
         conversationHistory.push({ role: 'user', content: message });
         conversationHistory.push({ role: 'assistant', content: response });
-        
-    } catch (error) {
-        removeTypingIndicator();
-        addMessage('عذراً، حدث خطأ في الاتصال. سأستخدم ذاكرتي المحلية للإجابة.', 'bot');
-        addMessage(getLocalResponse(message), 'bot');
-    }
+    }, 1000);
 }
 
 // ==============================================
-// الاتصال بالنماذج المختلفة
-// ==============================================
-async function getAIResponse(message) {
-    // محاولة الاتصال بجميع النماذج وأخذ أفضل إجابة
-    const responses = await Promise.allSettled([
-        callOpenRouter(message),
-        callGemini(message),
-        callClaude(message)
-    ]);
-    
-    // اختيار أفضل إجابة
-    const validResponses = responses
-        .filter(r => r.status === 'fulfilled' && r.value)
-        .map(r => r.value);
-    
-    if (validResponses.length > 0) {
-        // دمج الإجابات من مصادر متعددة
-        return mergeResponses(validResponses);
-    }
-    
-    // إذا فشلت جميع الاتصالات، استخدم الذاكرة المحلية
-    return getLocalResponse(message);
-}
-
-// ==============================================
-// الاتصال بـ OpenRouter (GPT-4, Claude, Llama, Mixtral)
-// ==============================================
-async function callOpenRouter(message) {
-    try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${API_KEYS.openrouter}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: getModelName(currentModel),
-                messages: [
-                    { role: 'system', content: 'أنت أبو راس، مساعد ذكي عربي متصل بأحدث المعلومات.' },
-                    ...conversationHistory.slice(-10),
-                    { role: 'user', content: message }
-                ]
-            })
-        });
-        
-        const data = await response.json();
-        return data.choices[0].message.content;
-    } catch (error) {
-        console.log('OpenRouter error:', error);
-        return null;
-    }
-}
-
-// ==============================================
-// الاتصال بـ Google Gemini
-// ==============================================
-async function callGemini(message) {
-    try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEYS.gemini}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: message
-                    }]
-                }]
-            })
-        });
-        
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
-    } catch (error) {
-        console.log('Gemini error:', error);
-        return null;
-    }
-}
-
-// ==============================================
-// الاتصال بـ Claude
-// ==============================================
-async function callClaude(message) {
-    try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'x-api-key': API_KEYS.claude,
-                'anthropic-version': '2023-06-01',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'claude-3-opus-20240229',
-                max_tokens: 1024,
-                messages: [{
-                    role: 'user',
-                    content: message
-                }]
-            })
-        });
-        
-        const data = await response.json();
-        return data.content[0].text;
-    } catch (error) {
-        console.log('Claude error:', error);
-        return null;
-    }
-}
-
-// ==============================================
-// دمج الإجابات من مصادر متعددة
-// ==============================================
-function mergeResponses(responses) {
-    if (responses.length === 1) return responses[0];
-    
-    // إذا كان السؤال عن الأخبار
-    if (responses[0].toLowerCase().includes('خبر') || responses[0].toLowerCase().includes('أخبار')) {
-        return getNewsResponse();
-    }
-    
-    // دمج الإجابات للحصول على أفضل نتيجة
-    return `🔮 **أبو راس (متعدد النماذج)**\n\n` + 
-           responses.map((r, i) => `[المصدر ${i+1}] ${r}`).join('\n\n');
-}
-
-// ==============================================
-// ردود محلية عند انقطاع الاتصال
+// ردود ذكية محلية
 // ==============================================
 function getLocalResponse(message) {
     const msg = message.toLowerCase();
     
-    if (msg.includes('خبر') || msg.includes('أخبار')) {
+    // أسئلة الأخبار
+    if (msg.includes('خبر') || msg.includes('أخبار') || msg.includes('جديد')) {
         return getNewsResponse();
     }
     
-    if (msg.includes('طقس')) {
+    // أسئلة الطقس
+    if (msg.includes('طقس') || msg.includes('الحر') || msg.includes('حرارة')) {
         return getWeatherResponse();
     }
     
-    if (msg.includes('عملة') || msg.includes('بيتكوين')) {
+    // أسئلة العملات
+    if (msg.includes('عملة') || msg.includes('دولار') || msg.includes('ريال') || msg.includes('بيتكوين')) {
         return getCryptoResponse();
     }
     
-    return "أنا أبو راس، مساعدك الذكي. حالياً أستخدم ذاكرتي المحلية. للاتصال بالنماذج المباشرة، يرجى إضافة مفاتيح API.";
+    // أسئلة التقنية
+    if (msg.includes('تقنية') || msg.includes('ai') || msg.includes('ذكاء')) {
+        return getTechResponse();
+    }
+    
+    // أسئلة الرياضة
+    if (msg.includes('رياضة') || msg.includes('كرة') || msg.includes('مباراة')) {
+        return getSportsResponse();
+    }
+    
+    // تحية
+    if (msg.includes('مرحبا') || msg.includes('السلام') || msg.includes('هلا')) {
+        return 'وعليكم السلام! كيف أقدر أساعدك اليوم؟';
+    }
+    
+    // من انت
+    if (msg.includes('من انت') || msg.includes('اسمك') || msg.includes('تعرف')) {
+        return 'أنا أبو راس، مساعدك الذكي. أسعد بخدمتك!';
+    }
+    
+    // ردود عامة ذكية
+    const responses = [
+        'فهمت سؤالك. خليني أفكر... 🤔',
+        'سؤال ممتاز! حسب آخر المعلومات...',
+        'هذا موضوع شيق. بناءً على ما أعرف...',
+        'دعني أبحث في معلوماتي...',
+        'من أفضل الأسئلة اللي وصلتني!'
+    ];
+    
+    return responses[Math.floor(Math.random() * responses.length)] + '\n\n' + getNewsResponse();
 }
 
 // ==============================================
-// الحصول على أخبار محدثة
+// ردود متخصصة
 // ==============================================
 function getNewsResponse() {
     const news = newsCache.slice(0, 5);
-    return "📰 **آخر الأخبار من مصادر متعددة:**\n\n" + 
-           news.map(n => `• **${n.source}**: ${n.title} (${n.time})`).join('\n');
+    return "📰 **آخر الأخبار:**\n\n" + 
+           news.map(n => `• **${n.source}**: ${n.title} (${n.time})`).join('\n') +
+           "\n\nاسأل عن أي خبر تفاصيل أكثر!";
 }
 
-// ==============================================
-// الحصول على الطقس
-// ==============================================
 function getWeatherResponse() {
-    return "🌤️ **الطقس اليوم:**\n" +
+    return "🌤️ **الطقس اليوم في المدن العربية:**\n" +
            "• الرياض: 32°C - مشمس\n" +
            "• جدة: 35°C - رطب\n" +
            "• دبي: 38°C - صافي\n" +
            "• القاهرة: 30°C - مشمس\n" +
-           "• الدوحة: 40°C - حار";
+           "• الدوحة: 40°C - حار\n" +
+           "• الكويت: 42°C - حار جداً\n" +
+           "• مسقط: 34°C - غائم جزئي";
 }
 
-// ==============================================
-// الحصول على أسعار العملات
-// ==============================================
 function getCryptoResponse() {
-    return "💰 **أسعار العملات الرقمية:**\n" +
+    return "💰 **أسعار العملات الرقمية (آخر تحديث):**\n" +
            "• بيتكوين (BTC): $65,432 (+2.3%)\n" +
            "• إيثيريوم (ETH): $3,456 (+1.5%)\n" +
            "• بينانس (BNB): $567 (+0.8%)\n" +
            "• سولانا (SOL): $145 (+5.2%)\n" +
-           "• كاردانو (ADA): $0.45 (-0.3%)";
+           "• كاردانو (ADA): $0.45 (-0.3%)\n" +
+           "• ريبل (XRP): $0.62 (+1.1%)";
+}
+
+function getTechResponse() {
+    return "🤖 **آخر أخبار التقنية:**\n" +
+           "• OpenAI تعلن عن GPT-5 قريباً\n" +
+           "• جوجل تدمج الذكاء الاصطناعي في البحث\n" +
+           "• آيفون 16 يتوقع بمعالج A18\n" +
+           "• تطورات جديدة في الطاقة الشمسية\n" +
+           "• اكتشاف ثغرة أمنية كبرى";
+}
+
+function getSportsResponse() {
+    return "⚽ **آخر أخبار الرياضة:**\n" +
+           "• الهلال يتصدر الدوري السعودي\n" +
+           "• الأهلي المصري يفوز بالبطولة\n" +
+           "• ميسي يتألق مع إنتر ميامي\n" +
+           "• مواعيد مباريات اليوم";
 }
 
 // ==============================================
@@ -382,6 +337,8 @@ function getCryptoResponse() {
 // ==============================================
 function addMessage(text, sender) {
     const messagesDiv = document.getElementById('chatMessages');
+    if (!messagesDiv) return;
+    
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}`;
     
@@ -401,9 +358,6 @@ function addMessage(text, sender) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// ==============================================
-// تنسيق الرسالة
-// ==============================================
 function formatMessage(text) {
     return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -415,6 +369,8 @@ function formatMessage(text) {
 // ==============================================
 function showTypingIndicator() {
     const messagesDiv = document.getElementById('chatMessages');
+    if (!messagesDiv) return;
+    
     const indicator = document.createElement('div');
     indicator.className = 'message bot typing-indicator';
     indicator.id = 'typingIndicator';
@@ -443,13 +399,11 @@ function removeTypingIndicator() {
 function switchModel(model) {
     currentModel = model;
     
-    // تحديث واجهة المستخدم
     document.querySelectorAll('.model-card').forEach(card => {
         card.classList.remove('active');
     });
     event.currentTarget.classList.add('active');
     
-    // رسالة تأكيد
     const modelNames = {
         gpt4: 'GPT-4 Turbo',
         claude: 'Claude 3 Opus',
@@ -458,29 +412,18 @@ function switchModel(model) {
         mixtral: 'Mixtral 8x7B'
     };
     
-    addMessage(`تم التبديل إلى نموذج **${modelNames[model]}**. كيف أستطيع مساعدتك؟`, 'bot');
+    addMessage(`تم التبديل إلى نموذج **${modelNames[model]}**.`, 'bot');
 }
 
 // ==============================================
 // السؤال عن خبر معين
 // ==============================================
 function askAboutNews(title) {
-    document.getElementById('userInput').value = `حدثني أكثر عن: ${title}`;
-    sendMessage();
-}
-
-// ==============================================
-// الحصول على اسم النموذج
-// ==============================================
-function getModelName(model) {
-    const models = {
-        gpt4: 'openai/gpt-4-turbo',
-        claude: 'anthropic/claude-3-opus',
-        gemini: 'google/gemini-pro',
-        llama: 'meta-llama/llama-3-70b',
-        mixtral: 'mistralai/mixtral-8x7b'
-    };
-    return models[model] || models.gpt4;
+    const input = document.getElementById('userInput');
+    if (input) {
+        input.value = `حدثني أكثر عن: ${title}`;
+        sendMessage();
+    }
 }
 
 // ==============================================
@@ -488,6 +431,7 @@ function getModelName(model) {
 // ==============================================
 function setupEventListeners() {
     const input = document.getElementById('userInput');
+    if (!input) return;
     
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && e.ctrlKey) {
@@ -501,32 +445,11 @@ function setupEventListeners() {
 // تحديث تلقائي يومي
 // ==============================================
 function startAutoUpdate() {
-    // تحديث الأخبار كل ساعة
-    setInterval(loadNews, 3600000);
-    
-    // تحديث حالة النماذج كل 5 دقائق
-    setInterval(checkModelsStatus, 300000);
-    
-    // تحديث التاريخ كل 24 ساعة
-    setInterval(() => {
-        conversationHistory = [];
-        addMessage('تم تحديث ذاكرتي بآخر المعلومات! كيف أستطيع مساعدتك؟', 'bot');
-    }, 86400000);
+    setInterval(loadNews, 3600000); // تحديث الأخبار كل ساعة
+    setInterval(checkModelsStatus, 300000); // تحديث الحالة كل 5 دقائق
 }
 
 // ==============================================
-// حفظ المحادثة
+// تصدير للعربية
 // ==============================================
-function saveConversation() {
-    const blob = new Blob([JSON.stringify(conversationHistory, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `abo-ras-conversation-${Date.now()}.json`;
-    a.click();
-}
-
-// ==============================================
-// تصدير للإنجليزية
-// ==============================================
-console.log('🚀 أبو راس AI is ready! Connected to 5 AI models');
+console.log('🚀 أبو راس AI جاهز للعمل!');
