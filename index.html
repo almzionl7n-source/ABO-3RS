@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أبو راس · الذكاء الاصطناعي الفائق</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0a0f;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* خلفية متحركة فاخرة */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .gradient-orb {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0) 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            animation: float 20s infinite;
+        }
+
+        .gradient-orb-2 {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(236,72,153,0.1) 0%, rgba(236,72,153,0) 70%);
+            border-radius: 50%;
+            bottom: -300px;
+            left: -300px;
+            animation: float 25s infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, 50px) scale(1.1); }
+            66% { transform: translate(-30px, 20px) scale(0.9); }
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* الحاوية الرئيسية */
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            height: 90vh;
+            background: rgba(10, 10, 15, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* الشريط العلوي */
+        .header {
+            padding: 25px 35px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text span {
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.03);
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .status-text {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* محتوى رئيسي - 3 أعمدة */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* الشريط الجانبي الأيمن */
+        .sidebar-right {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            padding: 20px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-title i {
+            color: #6366f1;
+        }
+
+        .model-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .model-card.active {
+            border-color: #6366f1;
+            background: rgba(99,102,241,0.1);
+        }
+
+        .model-card:hover {
+            background: rgba(99,102,241,0.15);
+            transform: translateY(-2px);
+        }
+
+        .model-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .model-name i {
+            color: #6366f1;
+        }
+
+        .model-desc {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .model-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(16,185,129,0.2);
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 20px;
+            font-size: 10px;
+            color: #10b981;
+            margin-top: 8px;
+        }
+
+        /* منطقة المحادثة */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            max-width: 80%;
+            animation: fadeIn 0.3s;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .message-content {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 25px;
+            padding: 15px 20px;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: rgba(99,102,241,0.15);
+            border-color: rgba(99,102,241,0.3);
+        }
+
+        .message-text {
+            color: rgba(255,255,255,0.9);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        /* منطقة الإدخال */
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 15px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50px;
+            padding: 5px 5px 5px 25px;
+        }
+
+        .input-wrapper textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px 0;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            font-size: 15px;
+            resize: none;
+            max-height: 120px;
+        }
+
+        .input-wrapper textarea:focus {
+            outline: none;
+        }
+
+        .input-wrapper textarea::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .send-btn {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1) rotate(45deg);
+        }
+
+        /* الشريط الجانبي الأيسر */
+        .sidebar-left {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            padding: 20px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .news-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .news-source {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .news-source i {
+            color: #6366f1;
+            font-size: 12px;
+        }
+
+        .news-source span {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .news-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .news-time {
+            font-size: 10px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* شريط التمرير المخصص */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6366f1;
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 250px 1fr 250px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-right, .sidebar-left {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الخلفية -->
+    <div class="background">
+        <div class="gradient-orb"></div>
+        <div class="gradient-orb-2"></div>
+    </div>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="container">
+        <!-- الهيدر -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>أبو راس</h1>
+                    <span>الذكاء الاصطناعي الفائق</span>
+                </div>
+            </div>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span class="status-text">متصل بـ 5 نماذج ذكاء اصطناعي</span>
+            </div>
+        </div>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <!-- الشريط الجانبي الأيمن - النماذج -->
+            <div class="sidebar-right">
+                <div class="sidebar-title">
+                    <i class="fas fa-brain"></i>
+                    <span>نماذج الذكاء الاصطناعي</span>
+                </div>
+                
+                <div class="model-card active" onclick="switchModel('gpt4')">
+                    <div class="model-name">
+                        <i class="fas fa-crown"></i>
+                        <span>GPT-4 Turbo</span>
+                    </div>
+                    <div class="model-desc">أحدث نموذج من OpenAI - دقة عالية</div>
+                    <span class="model-badge">محدث يومياً</span>
+                </div>
+
+                <div class="model-card" onclick="switchModel('claude')">
+                    <div class="model-name">
+                        <i class="fas fa-robot"></i>
+                        <span>Claude 3 Opus</span>
+                    </div>
+                    <div class="model-desc">من Anthropic - تحليل عميق</div>
+                    <span class="model-badge">محدث يومياً</span>
+                </div>
+
+                <div class="model-card" onclick="switchModel('gemini')">
+                    <div class="model-name">
+                        <i class="fas fa-star"></i>
+                        <span>Gemini Ultra</span>
+                    </div>
+                    <div class="model-desc">من Google - متعدد الوسائط</div>
+                    <span class="model-badge">محدث يومياً</span>
+                </div>
+
+                <div class="model-card" onclick="switchModel('llama')">
+                    <div class="model-name">
+                        <i class="fas fa-code"></i>
+                        <span>Llama 3</span>
+                    </div>
+                    <div class="model-desc">من Meta - مفتوح المصدر</div>
+                    <span class="model-badge">محدث يومياً</span>
+                </div>
+
+                <div class="model-card" onclick="switchModel('mixtral')">
+                    <div class="model-name">
+                        <i class="fas fa-bolt"></i>
+                        <span>Mixtral 8x7B</span>
+                    </div>
+                    <div class="model-desc">من Mistral - سريع وفعال</div>
+                    <span class="model-badge">محدث يومياً</span>
+                </div>
+            </div>
+
+            <!-- منطقة المحادثة -->
+            <div class="chat-area">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">
+                                مرحباً! أنا أبو راس، مساعدك الذكي المتصل بأقوى نماذج الذكاء الاصطناعي في العالم. كيف أستطيع مساعدتك اليوم؟
+                            </div>
+                            <div class="message-time">منذ لحظة</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input">
+                    <div class="input-wrapper">
+                        <textarea id="userInput" placeholder="اسألني عن أي شيء... (Ctrl + Enter للإرسال)" rows="1"></textarea>
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الشريط الجانبي الأيسر - أخبار -->
+            <div class="sidebar-left">
+                <div class="sidebar-title">
+                    <i class="fas fa-newspaper"></i>
+                    <span>آخر الأخبار</span>
+                </div>
+
+                <div id="newsContainer">
+                    <!-- الأخبار تتحمل هنا -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
