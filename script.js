@@ -14,8 +14,8 @@ let modelsStatus = {};
 
 // مفاتيح API (سجل مجاناً من المواقع)
 const API_KEYS = {
-    openrouter: 'YOUR_OPENROUTER_KEY', // سجل من openrouter.ai
-    gemini: 'YOUR_GEMINI_KEY',         // سجل من makersuite.google.com
+    openrouter: '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', // سجل من openrouter.ai
+    gemini: 'AIzaSyB3AbMVSfCtD_FUhoDivBfqmxg8Led-nT4',         // سجل من makersuite.google.com
     claude: 'YOUR_CLAUDE_KEY'           // سجل من anthropic.com
 };
 
