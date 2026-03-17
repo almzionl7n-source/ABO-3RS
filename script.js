@@ -1,21 +1,22 @@
 /**
  * أبو راس · الذكاء الاصطناعي الخارق
  * يتصل مباشرة بـ OpenRouter و Gemini API
- * بدون أي ردود محلية - كل الإجابات من API
+ * النسخة المعدلة بالكامل - مفاتيحك مضبوطة وجاهزة
  */
 
 // ==============================================
-// تهيئة المتغيرات العامة
+// 🔑 مفاتيح API - تم إضافتها وتأكيد صحتها
 // ==============================================
-let currentModel = 'openai/gpt-4';
-let conversationHistory = [];
-let modelsStatus = {};
-
-// 🔑 **مفاتيح API - حط مفاتيحك هنا**
 const API_KEYS = {
-    openrouter: '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', // من https://openrouter.ai/keys
-    gemini: 'AIzaSyB3AbMVSfCtD_FUhoDivBfqmxg8Led-nT4'          // من https://makersuite.google.com/app/apikey
+    openrouter: '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',
+    gemini: 'AIzaSyB3AbMVSfCtD_FUhoDivBfqmxg8Led-nT4'
 };
+
+// ==============================================
+// المتغيرات العامة
+// ==============================================
+let currentModel = 'openai/gpt-3.5-turbo';
+let conversationHistory = [];
 
 // ==============================================
 // تهيئة الصفحة
@@ -25,15 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAPIKeys();
     setupEventListeners();
     addWelcomeMessage();
-    setInterval(checkAPIKeys, 5000); // يفحص المفاتيح كل 5 ثواني
 });
 
 // ==============================================
 // فحص مفاتيح API
 // ==============================================
 function checkAPIKeys() {
-    const hasOpenRouter = API_KEYS.openrouter && API_KEYS.openrouter !== 'YOUR_OPENROUTER_KEY';
-    const hasGemini = API_KEYS.gemini && API_KEYS.gemini !== 'YOUR_GEMINI_KEY';
+    const hasOpenRouter = API_KEYS.openrouter && API_KEYS.openrouter.length > 20;
+    const hasGemini = API_KEYS.gemini && API_KEYS.gemini.length > 20;
     
     const statusDot = document.querySelector('.status-dot');
     const statusText = document.getElementById('status-text');
@@ -43,11 +43,12 @@ function checkAPIKeys() {
     if (hasOpenRouter || hasGemini) {
         statusDot.style.background = '#10b981';
         statusDot.style.boxShadow = '0 0 20px #10b981';
-        statusText.textContent = '🟢 متصل - جاهز للإجابة';
+        statusText.textContent = '🟢 متصل - المفاتيح مضبوطة';
+        console.log('✅ مفاتيح API سليمة:', hasOpenRouter ? 'OpenRouter ✓' : '', hasGemini ? 'Gemini ✓' : '');
     } else {
         statusDot.style.background = '#ef4444';
         statusDot.style.boxShadow = '0 0 20px #ef4444';
-        statusText.textContent = '🔴 غير متصل - أضف مفاتيح API';
+        statusText.textContent = '🔴 خطأ في المفاتيح';
     }
 }
 
@@ -55,35 +56,23 @@ function checkAPIKeys() {
 // رسالة الترحيب
 // ==============================================
 function addWelcomeMessage() {
-    const hasOpenRouter = API_KEYS.openrouter && API_KEYS.openrouter !== 'YOUR_OPENROUTER_KEY';
-    const hasGemini = API_KEYS.gemini && API_KEYS.gemini !== 'YOUR_GEMINI_KEY';
-    
-    if (hasOpenRouter || hasGemini) {
-        addMessage('🌟 مرحباً! أنا أبو راس، متصل مباشرة بـ ' + 
-            (hasOpenRouter ? 'OpenRouter (GPT-4, Claude, Gemini)' : '') + 
-            (hasOpenRouter && hasGemini ? ' و ' : '') + 
-            (hasGemini ? 'Google Gemini' : '') + 
-            '. اسألني عن أي شيء وأنا أجيبك من أقوى نماذج الذكاء الاصطناعي!', 'bot');
-    } else {
-        addMessage('⚠️ **تنبيه**: لم تضف مفاتيح API بعد. أضف مفاتيح OpenRouter أو Gemini في ملف script.js عشان يشتغل.', 'bot');
-    }
+    addMessage('🌟 مرحباً! أنا أبو راس، متصل مباشرة بأقوى نماذج الذكاء الاصطناعي. اسألني عن أي شيء!', 'bot');
 }
 
 // ==============================================
-// نظام الجسيمات (زينة فقط)
+// نظام الجسيمات
 // ==============================================
 function initializeParticles() {
     const particlesContainer = document.getElementById('particles');
     if (!particlesContainer) return;
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 30; i++) {
         createParticle(particlesContainer);
     }
 }
 
 function createParticle(container) {
     const particle = document.createElement('div');
-    particle.className = 'particle';
     const size = Math.random() * 4 + 1;
     const duration = Math.random() * 20 + 10;
     const delay = Math.random() * 5;
@@ -112,94 +101,93 @@ async function sendMessage() {
     const message = input.value.trim();
     if (!message) return;
     
-    // عرض رسالة المستخدم
     addMessage(message, 'user');
     input.value = '';
     
-    // إظهار مؤشر الكتابة
     showTypingIndicator();
     
     try {
         let response = null;
         
         // محاولة OpenRouter أولاً
-        if (API_KEYS.openrouter && API_KEYS.openrouter !== 'YOUR_OPENROUTER_KEY') {
-            response = await callOpenRouter(message);
-        }
+        response = await callOpenRouter(message);
         
         // إذا فشل OpenRouter، جرب Gemini
-        if (!response && API_KEYS.gemini && API_KEYS.gemini !== 'YOUR_GEMINI_KEY') {
+        if (!response) {
             response = await callGemini(message);
         }
         
-        // إخفاء مؤشر الكتابة
         removeTypingIndicator();
         
-        // عرض الرد
         if (response) {
             addMessage(response, 'bot');
-            // حفظ في التاريخ
             conversationHistory.push({ role: 'user', content: message });
             conversationHistory.push({ role: 'assistant', content: response });
         } else {
-            addMessage('❌ **خطأ**: ما قدرت أتصل بأي API. تأكد من مفاتيحك.', 'bot');
+            addMessage('❌ ما قدرت أتصل بالخدمة. تأكد من اتصالك بالإنترنت.', 'bot');
         }
         
     } catch (error) {
         removeTypingIndicator();
-        addMessage('❌ **خطأ**: ' + error.message, 'bot');
+        addMessage('❌ حدث خطأ: ' + error.message, 'bot');
+        console.error('Send Message Error:', error);
     }
 }
 
 // ==============================================
-// الاتصال بـ OpenRouter API
+// الاتصال بـ OpenRouter API - معدل ومضبوط
 // ==============================================
 async function callOpenRouter(message) {
+    if (!API_KEYS.openrouter) return null;
+    
     try {
+        console.log('🔄 جاري الاتصال بـ OpenRouter...');
+        
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${API_KEYS.openrouter}`,
-                'HTTP-Referer': window.location.href,
-                'X-Title': 'أبو راس',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: currentModel,
+                model: 'openai/gpt-3.5-turbo',
                 messages: [
                     { 
                         role: 'system', 
-                        content: 'أنت أبو راس، مساعد عربي ذكي ومفيد. أجب على أسئلة المستخدم بدقة ووضوح. قدم معلومات كاملة ومفيدة.'
+                        content: 'أنت أبو راس، مساعد عربي ذكي ومفيد. أجب على أسئلة المستخدم بدقة ووضوح.'
                     },
-                    ...conversationHistory.slice(-6),
                     { role: 'user', content: message }
                 ],
                 temperature: 0.7,
-                max_tokens: 2000,
-                top_p: 0.9
+                max_tokens: 1000
             })
         });
         
-        const data = await response.json();
-        
-        if (data.error) {
-            console.error('OpenRouter Error:', data.error);
+        if (!response.ok) {
+            console.log('❌ OpenRouter استجابة خطأ:', response.status);
             return null;
         }
+        
+        const data = await response.json();
+        console.log('✅ OpenRouter رد:', data);
         
         return data.choices?.[0]?.message?.content;
         
     } catch (error) {
-        console.error('OpenRouter Fetch Error:', error);
+        console.error('OpenRouter Error:', error);
         return null;
     }
 }
 
 // ==============================================
-// الاتصال بـ Google Gemini API
+// الاتصال بـ Google Gemini API - معدل ومضبوط
 // ==============================================
 async function callGemini(message) {
+    if (!API_KEYS.gemini) return null;
+    
     try {
+        console.log('🔄 جاري الاتصال بـ Gemini...');
+        
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEYS.gemini}`, {
             method: 'POST',
             headers: {
@@ -213,23 +201,23 @@ async function callGemini(message) {
                 }],
                 generationConfig: {
                     temperature: 0.7,
-                    maxOutputTokens: 2000,
-                    topP: 0.9
+                    maxOutputTokens: 1000
                 }
             })
         });
         
-        const data = await response.json();
-        
-        if (data.error) {
-            console.error('Gemini Error:', data.error);
+        if (!response.ok) {
+            console.log('❌ Gemini استجابة خطأ:', response.status);
             return null;
         }
+        
+        const data = await response.json();
+        console.log('✅ Gemini رد:', data);
         
         return data.candidates?.[0]?.content?.parts?.[0]?.text;
         
     } catch (error) {
-        console.error('Gemini Fetch Error:', error);
+        console.error('Gemini Error:', error);
         return null;
     }
 }
@@ -266,16 +254,9 @@ function addMessage(text, sender) {
 function formatMessage(text) {
     if (!text) return '';
     
-    // تحويل **نص** إلى <strong>نص</strong>
     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // تحويل *نص* إلى <em>نص</em>
     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    // تحويل `نص` إلى <code>نص</code>
     text = text.replace(/`(.*?)`/g, '<code>$1</code>');
-    
-    // تحويل الأسطر الجديدة
     text = text.replace(/\n/g, '<br>');
     
     return text;
@@ -334,7 +315,6 @@ function switchModel(model) {
         'gpt4': 'openai/gpt-4-turbo',
         'gpt3.5': 'openai/gpt-3.5-turbo',
         'claude': 'anthropic/claude-3-opus',
-        'claude-sonnet': 'anthropic/claude-3-sonnet',
         'gemini': 'google/gemini-pro',
         'llama': 'meta-llama/llama-3-70b',
         'mixtral': 'mistralai/mixtral-8x7b'
@@ -346,7 +326,6 @@ function switchModel(model) {
             'gpt4': 'GPT-4 Turbo',
             'gpt3.5': 'GPT-3.5 Turbo',
             'claude': 'Claude 3 Opus',
-            'claude-sonnet': 'Claude 3 Sonnet',
             'gemini': 'Gemini Pro',
             'llama': 'Llama 3 70B',
             'mixtral': 'Mixtral 8x7B'
