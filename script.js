@@ -13,8 +13,8 @@ let modelsStatus = {};
 
 // 🔑 **مفاتيح API - حط مفاتيحك هنا**
 const API_KEYS = {
-    openrouter: 'YOUR_OPENROUTER_KEY', // من https://openrouter.ai/keys
-    gemini: 'YOUR_GEMINI_KEY'          // من https://makersuite.google.com/app/apikey
+    openrouter: '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', // من https://openrouter.ai/keys
+    gemini: 'AIzaSyB3AbMVSfCtD_FUhoDivBfqmxg8Led-nT4'          // من https://makersuite.google.com/app/apikey
 };
 
 // ==============================================
