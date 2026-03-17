@@ -9,7 +9,7 @@
 // ==============================================
 const API_KEYS = {
     openrouter: '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',
-    gemini: 'AIzaSyB3AbMVSfCtD_FUhoDivBfqmxg8Led-nT4'
+    gemini: 'AIzaSyBDm-RTtdrt9VjdeTcneq9MipMTapNpB2w'
 };
 
 // ==============================================
