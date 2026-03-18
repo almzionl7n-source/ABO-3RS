@@ -8,7 +8,7 @@
 // 🔑 مفاتيح API - تم إضافتها وتأكيد صحتها
 // ==============================================
 const API_KEYS = {
-    openrouter: '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',
+    openrouter: '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',
     gemini: 'AIzaSyBDm-RTtdrt9VjdeTcneq9MipMTapNpB2w'
 };
 
